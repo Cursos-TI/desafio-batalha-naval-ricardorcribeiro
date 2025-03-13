@@ -1,8 +1,71 @@
 #include <stdio.h>
+// método responsável por verificar se o barco esta dentro do tabuleiro
+int BarcoTabuleiro(int barco[3])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            // trecho onde verifica se o barco esta dentro do tabuleiro, caso não esteja retorna 1
+            if (barco[i] > 99 || barco[j] < 0)
+                return 1;
+        }
+    }
+    return 0;
+}
+
+// método responsável por verificar se os barcos estão na mesma posição
+int VerificarSobreposicao(int barco1[3], int barco2[3], int barco3[3], int barco4[3])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            // trecho onde e feito todas as comparações para saber se os barcos estão na mesma posição, caso estejam retorna 1
+            if (barco1[i] == barco2[j] || barco1[i] == barco3[j] || barco1[i] == barco4[j] || barco2[i] == barco3[j] || barco2[i] == barco4[j] || barco3[i] == barco4[j])
+                return 1;
+        }
+    }
+    return 0;
+}
+
+// método responsável por posicionar os navios no tabuleiro
+void PosicionarNavio(int barco[3], int tabuleiro[10][10])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int linha = 0, coluna = 0;
+        for (int j = 0; j < barco[i]; j++)
+        {
+            coluna++;
+            if (coluna == 10)
+            {
+                coluna = 0;
+                linha++;
+            }
+        }
+        tabuleiro[linha][coluna] = 3;
+    }
+}
+
+// método responsável por imprimir o tabuleiro
+void ImprimirTabuleiro(int tabuleiro[10][10])
+{
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            if (j == 8)
+                printf("%d\n", tabuleiro[i][j]);
+            else
+                printf("%d ", tabuleiro[i][j]);
+        }
+    }
+}
 
 int main()
 {
-    // 1. Crie um tabuleiro 10x10 representado por uma matriz de inteiros.
+    // Crie um tabuleiro 10x10 representado por uma matriz de inteiros.
     int tabuleiro[10][10] =
         {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -15,74 +78,36 @@ int main()
          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-    // 2. Posicione 3 navios no tabuleiro. Cada navio ocupa uma célula e é representado pelo número 3.
-    int navioHorizontal[3] = {11, 12, 13}, navioVertical[3] = {21, 31, 41};
+    // Posicione 3 navios no tabuleiro. Cada navio ocupa uma célula e é representado pelo número 3.
+    int navioHorizontal[3] = {0, 1, 2}, navioVertical[3] = {21, 31, 41}, navioDiagonalDireita[3] = {15, 26, 37}, navioDiagonalEsquerda[3] = {55, 64, 73};
 
-    // loop para fazer as validações	para saber se os navios estão na mesma posição ou se estão fora do tabuleiro
-    for (int i = 0; i < 3; i++)
+    // validação para saber se os navios estão na mesma posição
+    if (VerificarSobreposicao(navioHorizontal,
+                              navioVertical,
+                              navioDiagonalDireita,
+                              navioDiagonalEsquerda))
     {
-        for (int j = 0; j < 3; j++)
-        {
-            // validação para saber se os navios estão na mesma posição
-            if (navioHorizontal[i] == navioVertical[j])
-            {
-                printf("Os navios estão na mesma posição\n");
-                return 0;
-            }
-            // validação para saber se os navios estão fora do tabuleiro
-            if (navioHorizontal[i] > 99 || navioVertical[j] > 99 || navioHorizontal[i] < 0 || navioVertical[j] < 0)
-            {
-                printf("Posição inválida\n");
-                return 0;
-            }
-        }
-    }
-    // loop para posicionar os navios no tabuleiro
-    for (int i = 0; i < 3; i++)
-    {
-        // criando variáveis para linha e coluna para posicionar os navios no sentido horizontal
-        int linha = 0, coluna = 0;
-        for (int j = 0; j < navioHorizontal[i]; j++)
-        {
-            coluna++;
-            // quando a coluna chegar a 10, a coluna volta a ser 0 e a linha é incrementada
-            if (coluna == 10)
-            {
-                coluna = 0;
-                linha++;
-            }
-        }
-        // posicionar o navio no tabuleiro
-        tabuleiro[linha][coluna] = 3;
-
-        // resetando as variáveis linha e coluna para posicionar os navios no sentido vertical
-        linha = 0;
-        coluna = 0;
-
-        for (int j = 0; j < navioVertical[i]; j++)
-        {
-            coluna++;
-            // quando a coluna chegar a 10, a coluna volta a ser 0 e a linha é incrementada
-            if (coluna == 10)
-            {
-                coluna = 0;
-                linha++;
-            }
-        }
-        // posicionar o navio no tabuleiro
-        tabuleiro[linha][coluna] = 3;
+        printf("Os navios estão na mesma posição\n");
+        return 0;
     }
 
-    // 3. Imprima o tabuleiro no console.
-    for (int i = 0; i < 9; i++)
+    // validação para saber se os navios estão fora do tabuleiro
+    if (BarcoTabuleiro(navioHorizontal) ||
+        BarcoTabuleiro(navioVertical) ||
+        BarcoTabuleiro(navioDiagonalDireita) ||
+        BarcoTabuleiro(navioDiagonalEsquerda))
     {
-        for (int j = 0; j < 9; j++)
-        {
-            if (j == 8)
-                printf("%d\n", tabuleiro[i][j]);
-            else
-                printf("%d ", tabuleiro[i][j]);
-        }
+        printf("Posição inválida\n");
+        return 0;
     }
+
+    // Posicione os navios no tabuleiro.
+    PosicionarNavio(navioHorizontal, tabuleiro);
+    PosicionarNavio(navioVertical, tabuleiro);
+    PosicionarNavio(navioDiagonalDireita, tabuleiro);
+    PosicionarNavio(navioDiagonalEsquerda, tabuleiro);
+
+    // Imprima o tabuleiro no console.
+    ImprimirTabuleiro(tabuleiro);
     return 0;
 }
